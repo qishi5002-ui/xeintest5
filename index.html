@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XeinStore - Digital Game Codes</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height:100vh; color:#222; }
+.header { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding:1rem 0; box-shadow:0 2px 20px rgba(0,0,0,0.1); position:sticky; top:0; z-index:100; }
+.nav { max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:0 2rem; }
+.logo { font-size:1.6rem; font-weight:700; background:linear-gradient(45deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.cart-btn { background:#667eea; color:#fff; border:none; padding:.6rem 1rem; border-radius:20px; cursor:pointer; font-weight:600; display:flex; gap:.5rem; align-items:center;}
+.cart-count { background:#ff4757; color:white; border-radius:50%; padding:.15rem .45rem; font-size:.8rem; }
+.container { max-width:1200px; margin:1.5rem auto; padding:1rem; }
+.hero { text-align:center; color:white; margin-bottom:1.5rem; }
+.hero h1 { font-size:2.4rem; text-shadow:2px 2px 4px rgba(0,0,0,0.25); margin-bottom:.3rem; }
+.products-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+.product-card { background: rgba(255,255,255,0.95); border-radius:12px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.08); transition:transform .18s; }
+.product-card:hover { transform: translateY(-6px); }
+.product-image { height:150px; display:flex; align-items:center; justify-content:center; font-size:3rem; color:white; background: linear-gradient(45deg,#667eea,#764ba2); }
+.product-info { padding:1rem; }
+.product-title { font-weight:700; color:#2d3748; margin-bottom:.35rem; }
+.product-platform { color:#667eea; margin-bottom:.6rem; }
+.duration-selector select { width:100%; padding:.45rem; border-radius:6px; border:1px solid #e6eef8; margin-bottom:.5rem; }
+.duration-price { color:#667eea; font-weight:700; margin-bottom:.6rem; }
+.add-to-cart { width:100%; padding:.6rem; border-radius:8px; background:#667eea; color:white; border:none; cursor:pointer; font-weight:700; }
+.cart-sidebar { position: fixed; right: -420px; top: 0; width: 420px; height: 100vh; background: white; box-shadow: -5px 0 20px rgba(0,0,0,.12); transition: right .28s; z-index:900; overflow-y:auto; }
+.cart-sidebar.open { right: 0; }
+.cart-header { padding:1rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+.close-cart { background:none; border:none; font-size:1.3rem; cursor:pointer; }
+.cart-items { padding:1rem; }
+.cart-item { display:flex; justify-content:space-between; gap:10px; padding:.75rem 0; border-bottom:1px solid #f1f3f5; align-items:center; }
+.cart-total { padding:1rem; border-top:2px solid #eee; font-weight:800; font-size:1.05rem; }
+.checkout-btn { width:100%; padding:1rem; border-radius:10px; background:#00d4aa; color:white; border:none; font-weight:800; cursor:pointer; margin-top:.8rem; }
+.modal-backdrop { position:fixed; inset:0; background: rgba(0,0,0,0.55); display:none; align-items:center; justify-content:center; z-index:10000; padding:1rem; }
+.modal-backdrop.open { display:flex; }
+.modal { width:100%; max-width:720px; background:white; border-radius:12px; overflow:auto; max-height:90vh; }
+.modal-header { padding:1rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+.modal-body { padding:1rem; display:grid; gap:1rem; grid-template-columns: 1fr 320px; }
+.modal-column { padding:.5rem; }
+.field { margin-bottom:.6rem; }
+input[type="text"] { width:100%; padding:.6rem; border-radius:8px; border:1px solid #e6edf7; }
+.qr-card { border:1px dashed #e6edf7; padding:1rem; border-radius:8px; text-align:center; }
+.network-label { font-weight:700; margin-bottom:.4rem; }
+.small { font-size:.9rem; color:#666; }
+.btn { padding:.6rem .9rem; border-radius:8px; border:none; cursor:pointer; }
+.btn-primary { background:#667eea; color:white; font-weight:700; }
+.receipt-page { max-width:720px; margin:2rem auto; background:white; padding:1rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1); display:none;}
+.notification { position: fixed; bottom: 20px; left: 20px; background: #00d4aa; color: white; padding: 0.75rem 1rem; border-radius: 6px; z-index: 10000; font-size: 0.9rem; box-shadow: 0 2px 8px rgba(0,0,0,0.2); opacity:0; transition:opacity 0.5s;}
+@media (max-width:900px) {
+.modal-body { grid-template-columns: 1fr; }
+.cart-sidebar { width:100%; right:-100%; }
+.cart-sidebar.open { right:0; width:100%; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+<nav class="nav">
+<div class="logo">🎮 XeinStore</div>
+<div style="display:flex; gap:.6rem; align-items:center;">
+<button class="cart-btn" onclick="toggleCart()">Cart <span class="cart-count" id="cart-count">0</span></button>
+</div>
+</nav>
+</header>
+
+<main class="container">
+<div class="hero">
+<h1>Digital Game Codes</h1>
+<p>Instant delivery • USDT (TRC20) • Best prices</p>
+</div>
+
+<div class="products-grid" id="products-grid"></div>
+</main>
+
+<aside class="cart-sidebar" id="cart-sidebar">
+<div class="cart-header">
+<h3>Shopping Cart</h3>
+<button class="close-cart" onclick="toggleCart()">×</button>
+</div>
+<div class="cart-items" id="cart-items">
+<p style="text-align:center; color:#666; padding:2rem;">Your cart is empty</p>
+</div>
+<div class="cart-total" id="cart-total" style="display:none;">Total: $0.00</div>
+<div style="padding:1rem;">
+<button id="checkout-btn" class="checkout-btn" style="display:none;" onclick="openCheckoutModal()">Pay with USDT</button>
+</div>
+</aside>
+
+<div class="modal-backdrop" id="checkout-modal">
+<div class="modal">
+<div class="modal-header">
+<h3>Checkout</h3>
+<div>
+<button class="btn" onclick="closeCheckoutModal()">Close</button>
+</div>
+</div>
+<div class="modal-body">
+<div class="modal-column">
+<div class="field">
+<label class="small-muted">Your Telegram username (required)</label>
+<input id="buyer-telegram" type="text" placeholder="@yourusername">
+</div>
+<div id="order-summary" style="border:1px solid #f0f3f7; padding:.75rem; border-radius:8px;"></div>
+<div style="margin-top:.6rem; display:flex; gap:.6rem;">
+<button class="btn btn-primary" onclick="markAsPaid()">I PAID</button>
+<button class="btn" onclick="closeCheckoutModal()">Cancel</button>
+</div>
+<div style="margin-top:1rem;">
+<p class="small-muted">Before paying, take a screenshot of your USDT payment. After clicking "I PAID", you will see your receipt and need to contact me on Telegram: <a href="https://t.me/cocomelonqueen" target="_blank">@cocomelonqueen</a></p>
+</div>
+</div>
+<div class="modal-column">
+<div class="
